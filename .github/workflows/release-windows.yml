@@ -42,25 +42,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
-          missing=()
-          for var_name in \
-            IRFLOW_UPDATE_BASE_URL \
-            IRFLOW_UPDATE_BUCKET \
-            AWS_REGION \
-            AWS_ACCESS_KEY_ID \
-            AWS_SECRET_ACCESS_KEY
-          do
-            if [ -z "${!var_name:-}" ]; then
-              missing+=("$var_name")
-            fi
-          done
-
-          if [ "${#missing[@]}" -gt 0 ]; then
-            echo "::error::Missing required GitHub variables/secrets: ${missing[*]}"
-            exit 1
-          fi
-
           pkg_version="$(node -p "require('./package.json').version")"
           expected_tag="v${pkg_version}"
           if [ "${GITHUB_REF_NAME}" != "${expected_tag}" ]; then
@@ -153,6 +134,7 @@ jobs:
           fi
 
       - name: Publish updater feed to object storage
+        if: ${{ env.IRFLOW_UPDATE_BUCKET != '' }}
         shell: bash
         run: |
           set -euo pipefail
