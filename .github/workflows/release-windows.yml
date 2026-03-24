@@ -64,17 +64,31 @@ jobs:
           npm run build:renderer
           npx electron-builder --config electron-builder.config.cjs --win --publish never
 
+      - name: List release artifacts (debug)
+        shell: bash
+        run: ls -la release/
+
       - name: Collect release artifacts
         id: artifacts
         shell: bash
         run: |
           set -euo pipefail
 
-          pkg_version="$(node -p "require('./package.json').version")"
           channel="${IRFLOW_UPDATE_CHANNEL:-latest}"
 
-          nsis_path="$(find release -maxdepth 1 -type f -name "*${pkg_version}*Setup*.exe" | sort | head -n 1)"
-          portable_path="$(find release -maxdepth 1 -type f -name "*${pkg_version}*.exe" ! -name "*Setup*" | sort | head -n 1)"
+          # Use shell globs — more reliable than find on Windows Git Bash
+          shopt -s nullglob
+          nsis_files=( release/*Setup*.exe )
+          portable_files=( release/*.exe )
+          yml_files=( release/*.yml )
+          shopt -u nullglob
+
+          nsis_path="${nsis_files[0]:-}"
+          # portable is any .exe that isn't the Setup installer
+          portable_path=""
+          for f in "${portable_files[@]:-}"; do
+            [[ "$f" != *Setup* ]] && portable_path="$f" && break
+          done
 
           if [ "${channel}" = "latest" ]; then
             yml_name="latest.yml"
@@ -84,15 +98,17 @@ jobs:
 
           yml_path="release/${yml_name}"
           if [ ! -f "${yml_path}" ]; then
-            yml_path="$(find release -maxdepth 1 -type f -name '*.yml' ! -name '*mac*' ! -name '*linux*' | sort | head -n 1)"
+            yml_path="${yml_files[0]:-}"
           fi
 
-          for path_name in nsis_path yml_path; do
-            if [ -z "${!path_name:-}" ] || [ ! -f "${!path_name}" ]; then
-              echo "::error::Missing expected release artifact: ${path_name}"
-              exit 1
-            fi
-          done
+          if [ -z "${nsis_path}" ] || [ ! -f "${nsis_path}" ]; then
+            echo "::error::NSIS installer not found in release/. Contents: $(ls release/)"
+            exit 1
+          fi
+          if [ -z "${yml_path}" ] || [ ! -f "${yml_path}" ]; then
+            echo "::error::Update feed YML not found in release/. Contents: $(ls release/)"
+            exit 1
+          fi
 
           echo "nsis=${nsis_path}" >> "${GITHUB_OUTPUT}"
           echo "portable=${portable_path}" >> "${GITHUB_OUTPUT}"
