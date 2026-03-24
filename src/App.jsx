@@ -18,6 +18,8 @@ const CHECKBOX_COL_WIDTH = 24;
 const VT_COL_WIDTH = 80;
 const VT_COMPATIBLE_RE = /^(SHA256|SHA1|MD5)_Hash$|^Domain_Name$|^IPv[46]_Address(:Port)?$|^URL$/;
 
+const isMac = typeof window !== "undefined" && window.tle?.platform === "darwin";
+
 const THEMES = {
   dark: {
     bg: "#0f1114", bgAlt: "#181b20", bgInput: "#12151a", border: "#2a2d33", borderAccent: "#E85D2A",
@@ -2920,7 +2922,7 @@ export default function App() {
         <line x1="32" y1="20" x2="34.5" y2="20" stroke={th.accent} strokeWidth="1.2" opacity="0.7" strokeLinecap="round" />
       </svg>
       <div style={{ fontSize: 18, fontWeight: 700, color: th.text, fontFamily: "-apple-system, 'SF Pro Display', sans-serif", marginBottom: 2 }}>IRFlow <span style={{ color: th.accent }}>Timeline</span></div>
-      <p style={{ color: th.textMuted, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 28, fontFamily: "-apple-system, sans-serif" }}>DFIR Timeline Analysis for macOS</p>
+      <p style={{ color: th.textMuted, fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 28, fontFamily: "-apple-system, sans-serif" }}>DFIR Timeline Analysis</p>
       {/* Progress */}
       <div style={{ width: 400, maxWidth: "100%" }}>
         <h3 style={{ color: th.text, fontSize: 16, marginBottom: 8, fontFamily: "-apple-system, sans-serif" }}>
@@ -3006,7 +3008,7 @@ export default function App() {
             <line x1="32" y1="20" x2="34.5" y2="20" stroke={th.accent} strokeWidth="1.2" opacity="0.7" strokeLinecap="round" />
           </svg>
           <h1 style={{ fontSize: 34, fontWeight: 700, color: th.text, margin: 0, fontFamily: "-apple-system, 'SF Pro Display', sans-serif" }}>IRFlow <span style={{ color: th.accent }}>Timeline</span></h1>
-          <p style={{ color: th.textDim, fontSize: 14, letterSpacing: "0.14em", textTransform: "uppercase", margin: "10px 0 6px", fontWeight: 600 }}>DFIR Timeline Analysis for macOS</p>
+          <p style={{ color: th.textDim, fontSize: 14, letterSpacing: "0.14em", textTransform: "uppercase", margin: "10px 0 6px", fontWeight: 600 }}>DFIR Timeline Analysis</p>
           <p style={{ color: th.textMuted, fontSize: 12, margin: "0 0 32px" }}>SQLite-backed · Handles large files for timeline analysis · CSV / TSV / XLSX / EVTX / Plaso / Raw $MFT / $J</p>
           <button onClick={() => tle?.openFileDialog()} style={{ padding: "14px 48px", background: th.primaryBtn, color: "#fff", border: "none", borderRadius: 8, fontSize: 16, fontWeight: 600, cursor: "pointer", fontFamily: "-apple-system, sans-serif", WebkitAppRegion: "no-drag" }}>Open File</button>
           <p style={{ color: th.textMuted, fontSize: 12, marginTop: 28 }}>⌘O open · ⌘F search · ⌘B bookmarks · ⌘E export</p>
@@ -3067,7 +3069,7 @@ export default function App() {
       )}
 
       {/* Toolbar — draggable title bar region */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 12px 6px 84px", background: th.bgAlt, borderBottom: `1px solid ${th.glassBorder}`, gap: 10, flexShrink: 0, position: "relative", zIndex: 100, WebkitAppRegion: "drag" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMac ? "6px 12px 6px 84px" : "6px 12px", background: th.bgAlt, borderBottom: `1px solid ${th.glassBorder}`, gap: 10, flexShrink: 0, position: "relative", zIndex: 100, WebkitAppRegion: "drag" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, WebkitAppRegion: "no-drag" }}>
           {/* Menu capsule */}
           <div style={{ display: "flex", alignItems: "center", gap: 1, background: th.glassBg, border: `1px solid ${th.glassBorder}`, borderRadius: 9, padding: 2 }}>

@@ -31,6 +31,22 @@ const config = {
     entitlements: "entitlements.mac.plist",
     entitlementsInherit: "entitlements.mac.plist",
   },
+  win: {
+    icon: "assets/icon.png",
+    target: [
+      { target: "nsis", arch: ["x64"] },
+      { target: "portable", arch: ["x64"] },
+    ],
+  },
+  linux: {
+    icon: "assets/icon.png",
+    target: [
+      { target: "AppImage", arch: ["x64"] },
+      { target: "deb", arch: ["x64"] },
+      { target: "rpm", arch: ["x64"] },
+    ],
+    category: "Utility",
+  },
   afterSign: "scripts/notarize.js",
   electronUpdaterCompatibility: ">=2.16",
   dmg: {

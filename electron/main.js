@@ -244,9 +244,13 @@ function createWindow() {
     height: 950,
     minWidth: 900,
     minHeight: 600,
-    titleBarStyle: "hiddenInset",
-    trafficLightPosition: { x: 16, y: 16 },
-    vibrancy: "under-window",
+    ...(process.platform === "darwin" ? {
+      titleBarStyle: "hiddenInset",
+      trafficLightPosition: { x: 16, y: 16 },
+      vibrancy: "under-window",
+    } : {
+      titleBarStyle: "default",
+    }),
     backgroundColor: "#0f1114",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -1653,8 +1657,9 @@ function buildMenu() {
       ]
     : [{ label: "No Recent Files", enabled: false }];
 
+  const isMac = process.platform === "darwin";
   const template = [
-    {
+    ...(isMac ? [{
       label: "IRFlow Timeline",
       submenu: [
         { role: "about" },
@@ -1667,7 +1672,7 @@ function buildMenu() {
         { type: "separator" },
         { role: "quit" },
       ],
-    },
+    }] : []),
     {
       label: "File",
       submenu: [
@@ -1715,6 +1720,7 @@ function buildMenu() {
         },
         { type: "separator" },
         { role: "close" },
+        ...(!isMac ? [{ type: "separator" }, { role: "quit" }] : []),
       ],
     },
     {
@@ -1831,7 +1837,11 @@ function buildMenu() {
     },
     {
       label: "Window",
-      submenu: [{ role: "minimize" }, { role: "zoom" }, { type: "separator" }, { role: "front" }],
+      submenu: [
+        { role: "minimize" },
+        { role: "zoom" },
+        ...(isMac ? [{ type: "separator" }, { role: "front" }] : []),
+      ],
     },
     {
       label: "Help",
@@ -1853,6 +1863,7 @@ function buildMenu() {
           label: "EZ Tools Website",
           click: () => shell.openExternal("https://ericzimmerman.github.io/"),
         },
+        ...(!isMac ? [{ type: "separator" }, { role: "about" }] : []),
       ],
     },
   ];
@@ -2048,4 +2059,11 @@ ${body}
 </html>`;
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  // On Windows/Linux, file associations pass the path via argv rather than open-file.
+  if (process.platform !== "darwin") {
+    const argvFile = process.argv.slice(app.isPackaged ? 1 : 2).find((a) => !a.startsWith("-"));
+    if (argvFile) app.pendingFilePath = argvFile;
+  }
+  createWindow();
+});

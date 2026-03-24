@@ -1,6 +1,8 @@
 const { contextBridge, ipcRenderer, webUtils } = require("electron");
 
 contextBridge.exposeInMainWorld("tle", {
+  platform: process.platform,
+
   // File operations
   openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
   checkForUpdates: () => ipcRenderer.invoke("check-for-updates"),

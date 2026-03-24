@@ -73,11 +73,13 @@ case $choice in
         echo "📦 Building .app bundle..."
         npm run build:renderer
         npx electron-builder --mac dir
-        # Ad-hoc sign to reduce Gatekeeper friction
-        APP_PATH=$(ls -d release/mac*/"IRFlow Timeline.app" 2>/dev/null | head -1)
-        if [ -n "$APP_PATH" ]; then
-            echo "🔏 Ad-hoc signing app bundle..."
-            codesign --force --deep --sign - "$APP_PATH" 2>/dev/null && echo "   Signed successfully" || echo "   Signing skipped (no Xcode CLI tools?)"
+        # Ad-hoc sign to reduce Gatekeeper friction (macOS only)
+        if [ "$(uname)" = "Darwin" ]; then
+            APP_PATH=$(ls -d release/mac*/"IRFlow Timeline.app" 2>/dev/null | head -1)
+            if [ -n "$APP_PATH" ]; then
+                echo "Signing app bundle..."
+                codesign --force --deep --sign - "$APP_PATH" 2>/dev/null && echo "   Signed successfully" || echo "   Signing skipped (no Xcode CLI tools?)"
+            fi
         fi
         echo ""
         echo "✅ App bundle is in: release/mac*/"
