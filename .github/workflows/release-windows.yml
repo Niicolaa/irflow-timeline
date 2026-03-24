@@ -62,7 +62,7 @@ jobs:
           export IRFLOW_UPDATE_CHANNEL="${IRFLOW_UPDATE_CHANNEL:-latest}"
           rm -rf release
           npm run build:renderer
-          npx electron-builder --config electron-builder.config.cjs --win
+          npx electron-builder --config electron-builder.config.cjs --win --publish never
 
       - name: Collect release artifacts
         id: artifacts

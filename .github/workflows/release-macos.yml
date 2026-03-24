@@ -115,7 +115,7 @@ jobs:
           # --config.npmRebuild=false: skip electron-builder's built-in native module
           # rebuild since we already pre-built the universal fat binary above.
           npm run build:renderer
-          npx electron-builder --config electron-builder.config.cjs --mac --config.npmRebuild=false
+          npx electron-builder --config electron-builder.config.cjs --mac --config.npmRebuild=false --publish never
 
       - name: Collect release artifacts
         id: artifacts
